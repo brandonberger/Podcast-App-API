@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="default" defaultIdMethod="native" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://xsd.propelorm.org/1.6/database.xsd" namespace="Models">
+    
+    <!-- Users -->
+    <table name="users" phpName="Users" namespace="Users">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="email" type="varchar" size="255" required="true" phpName="Email" />
+        <column name="first_name" type="varchar" size="50" required="true" phpName="FirstName"/>
+        <column name="last_name" type="varchar" size="50" required="true" phpName="LastName"/>
+        <column name="active" type="tinyint" required="true" phpName="Active" defaultValue="1" />
+        <column name="google_id" type="varchar" size="255" required="true" phpName="GoogleId"/>
+        <column name="image_url" type="varchar" size="255" required="true" phpName="ImageUrl"/>
+
+    </table>
+
+
+    <table name="user_sessions" phpName="UserSessions" namespace="Users">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="user_id" sqlType="int(11) unsigned" required="true" phpName="UserId" />
+        <column name="exp_date" phpName="ExpDate" type="DATE" required="true"/>
+        <column name="hash" type="longvarchar" required="true" phpName="Hash"/>
+        <column name="salt" type="longvarchar" required="true" phpName="Salt"/>
+
+        <foreign-key foreignTable="users" phpName="Users">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+ 
+   <table name="user_relations" phpName="UserRelations" namespace="Users" isCrossRef="true">
+        <column name="follower_id" phpName="FollowerId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="following_id" phpName="FollowingId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+
+        <foreign-key foreignTable="users" phpName="Follower">
+            <reference local="follower_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="users" phpName="Following">
+            <reference local="following_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+
+`
+    <table name="audio_player_settings" phpName="AudioPlayerSettings" namespace="AudioPlayerSettings">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="user_id" sqlType="int(11) unsigned" required="true" phpName="UserId" />
+        <column name="shuffle" type="tinyint" required="true" phpName="Shuffle" />
+
+        <foreign-key foreignTable="users" phpName="Users">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="user_settings" phpName="UserSettings" namespace="UserSettings">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="user_id" sqlType="int(11) unsigned" required="true" phpName="UserId" />
+        <column name="auto_play" type="tinyint" required="true" phpName="AutoPlay" />
+        <column name="plan_id" sqlType="int(11) unsigned" required="true" phpName="PlanId" />
+
+        <foreign-key foreignTable="users" phpName="Users">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="plans" phpName="Plans">
+            <reference local="plan_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="plans" phpName="Plans" namespace="Plans">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="name" type="varchar" size="50" required="true" phpName="Name"/>
+        <column name="sub_playlists" type="tinyint" required="true" phpName="SubPlaylists" />
+        <column name="automated_tagging" type="tinyint" required="true" phpName="AutomatedTagging" />
+        <column name="playlist_max" sqlType="int(11) unsigned" phpName="PlaylistMax"/>
+    </table>
+
+
+    <!-- Podcasts -->
+    <table name="podcasts" phpName="Podcasts" namespace="Podcasts">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="podcast_id" type="varchar" size="255" required="true" phpName="PodcastId"/>
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="user_podcasts" phpName="UserPodcasts" namespace="UserPodcasts" isCrossRef="true">
+        <column name="podcast_id" phpName="PodcastId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="user_id" phpName="UserId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="following" type="tinyint" required="true" phpName="Following" />
+        <behavior name="timestampable" />
+        
+        <foreign-key foreignTable="podcasts" phpName="Podcasts">
+            <reference local="podcast_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="users" phpName="Users">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+
+
+    <!-- Playlists -->
+    <table name="user_playlists" phpName="UserPlaylists" namespace="Playlists" isCrossRef="true">
+        <column name="user_id" phpName="UserId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="playlist_id" phpName="PlaylistId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+
+        <foreign-key foreignTable="users" phpName="Users">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="playlists" phpName="Playlists">
+            <reference local="playlist_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="playlists" phpName="Playlists" namespace="Playlists">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="50" required="true" phpName="Name"/>
+        <column name="is_parent" type="tinyint" requred="true" phpName="isParent"/>
+        <column name="tag_generated" type="tinyint" requred="true" phpName="TagGenerated"/>
+        <column name="favorites" type="integer" required="true" phpName="Favorites"/>
+        <column name="shareable_status" type="tinyint" required="true" phpName="ShareableStatus"/>
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="playlists_children" phpName="PlaylistChildren" namespace="Playlists" isCrossRef="true">
+        <column name="parent_id" phpName="ParentId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="child_id" phpName="ChildId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+
+        <foreign-key foreignTable="playlists" phpName="PlaylistsParent">
+            <reference local="parent_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="playlists" phpName="PlaylistsChild">
+            <reference local="child_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="playlist_comments" phpName="PlaylistComments" namespace="Playlists">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="comment" type="longvarchar" required="true" phpName="Comment"/>
+        <column name="user_id" phpName="UserId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="playlist_id" phpName="PlaylistId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <behavior name="timestampable" />
+
+        <foreign-key foreignTable="users" phpName="Users">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="playlists" phpName="Playlists">
+            <reference local="playlist_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+
+    <!-- Episodes -->
+    <table name="user_episodes" phpName="UserEpisodes" namespace="Episodes">
+        <column name="user_id" phpName="UserId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="episode_id" phpName="EpisodeId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="downloaded" type="tinyint" requred="true" phpName="Downloaded"/>
+        <column name="saved" type="tinyint" requred="true" phpName="Saved"/>
+        <column name="last_progress" type="varchar" size="50" phpName="LastProgress"/>
+        <column name="last_played" type="varchar" size="50" phpName="LastPlayed"/>
+        <column name="bookmark_id" phpName="BookmarkId" sqlType="int(11) unsigned"/>
+
+        <behavior name="timestampable" />
+
+        <foreign-key foreignTable="users" phpName="User">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="episodes" phpName="Episode">
+            <reference local="episode_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="bookmarks" phpName="Bookmark">
+            <reference local="bookmark_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+
+    <table name="playlist_episodes" phpName="PlaylistEpisodes" namespace="Episodes" isCrossRef="true">
+        <column name="playlist_id" phpName="PlaylistId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="episode_id" phpName="EpisodeId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+
+        <foreign-key foreignTable="playlists" phpName="Playlist">
+            <reference local="playlist_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="episodes" phpName="Episode">
+            <reference local="episode_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+
+    <table name="episodes" phpName="Episodes" namespace="Episodes">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="episode_id" type="varchar" size="255" required="true" phpName="EpisodeId"/>
+        <column name="podcast_id" sqlType="int(11) unsigned" required="true" phpName="PodcastId" />
+        
+        <column name="number_of_plays" type="integer" phpName="NumberOfPlays" />
+        <column name="number_of_downloads" type="integer" phpName="NumberOfDownloads" />
+
+        <behavior name="timestampable" />
+        
+        <foreign-key foreignTable="podcasts" phpName="Podcasts">
+            <reference local="podcast_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+
+    <table name="bookmarks" phpName="Bookmarks" namespace="Bookmarks">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="episode_id" sqlType="int(11) unsigned" required="true" phpName="EpisodeId"/>
+        <column name="notes" type="longvarchar" phpName="Notes" />
+
+        <behavior name="timestampable" />
+        
+        <foreign-key foreignTable="episodes" phpName="Episodes">
+            <reference local="episode_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+
+
+
+    <!-- Tags -->
+    <table name="user_playlist_tags" phpName="UserPlaylistTags" namespace="UserTags" isCrossRef="true">
+        <column name="tag_id" phpName="TagId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="playlist_id" phpName="PlaylistId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="user_id" phpName="UserId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <behavior name="timestampable" />
+        
+        <foreign-key foreignTable="playlists" phpName="PlaylistsTags">
+            <reference local="playlist_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="tags" phpName="PlaylistTag">
+            <reference local="tag_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="users" phpName="UsersPlaylistTags">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="user_episode_tags" phpName="UserEpisodeTags" namespace="UserTags" isCrossRef="true">
+        <column name="tag_id" phpName="TagId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="episode_id" phpName="EpisodeId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="user_id" phpName="UserId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <behavior name="timestampable" />
+        
+        <foreign-key foreignTable="episodes" phpName="EpisodesTags">
+            <reference local="episode_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="tags" phpName="EpisodeTag">
+            <reference local="tag_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="users" phpName="UsersEpisodeTags">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="tags" phpName="Tags" namespace="Tags">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="50" required="true" phpName="Name"/>
+        <column name="super_tag" type="tinyint" requred="true" phpName="SuperTag"/>
+        <behavior name="timestampable" />
+    </table>
+
+
+
+    <!-- Logging -->
+    <table name="log_action_types" phpName="LogActionTypes" namespace="Logging">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="action" type="varchar" size="50" required="true" phpName="Action"/>
+    </table>
+
+    <table name="log_types" phpName="LogTypes" namespace="Logging">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="type" type="varchar" size="50" required="true" phpName="Type"/>
+    </table>
+
+    <table name="logging" phpName="Logging" namespace="Logging">
+        <column name="id" sqlType="int(11) unsigned" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="user_id" phpName="UserId" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="log_type" phpName="LogType" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="action_type" phpName="ActionType" sqlType="int(11) unsigned" required="true" primaryKey="true"/>
+        <column name="action_message" type="longvarchar" phpName="ActionMessage" />
+        <behavior name="timestampable" />
+
+        <foreign-key foreignTable="users" phpName="Users">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="log_action_types" phpName="LogActionTypes">
+            <reference local="log_type" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="log_types" phpName="LogTypes">
+            <reference local="action_type" foreign="id"/>
+        </foreign-key>
+    </table>
+
+</database>

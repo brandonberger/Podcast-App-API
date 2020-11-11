@@ -1,0 +1,18 @@
+{
+    "require": {
+        "propel/propel": "~2.0@dev",
+        "klein/klein": "^2.1",
+        "mashape/unirest-php": "^3.0",
+        "filp/whoops": "^2.1",
+        "google/apiclient": "2.4.0",
+        "lcobucci/jwt": "3.3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Config\\": "src/config/",
+            "Models\\": "src/models/Models",
+            "Controllers\\": "src/controllers",
+            "Library\\": "src/library"
+        }
+    }
+}

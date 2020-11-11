@@ -1,0 +1,21 @@
+DirectoryIndex index.php
+#Keep Server alive
+<IfModule mod_headers.c>
+Header set Connection keep-alive
+</IfModule>
+# set the default language
+DefaultLanguage en-US
+<IfModule mod_rewrite.c>
+
+    Options +FollowSymlinks -MultiViews
+    RewriteEngine On
+    RewriteBase /
+
+   
+    #if a file does not exist, we redirect to index.php
+    #this allows all klein routing to be handled by one file.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php [L,QSA]
+
+</IfModule>
+ErrorDocument 404 /index.php
